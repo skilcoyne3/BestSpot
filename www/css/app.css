@@ -1,0 +1,234 @@
+body {
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-highlight: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    /* For some Androids */
+}
+/* Recommended for Windows 8 Phone */
+/* SOURCE: http://www.excellentwebworld.com/common-problems-solution-for-windows-phone-8-phonegap */
+
+html {
+    -ms-touch-action: pan-x;
+}
+/* Recommended for Windows 8 Phone */
+/* SOURCE: http://www.excellentwebworld.com/common-problems-solution-for-windows-phone-8-phonegap */
+
+body {
+    -ms-touch-action: pan-y;
+    -ms-content-zooming: none;
+}
+/* allow copy-paste */
+
+input,
+textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+body {
+    /* margin: 0.5rem ; */
+    
+    background: white;
+    color: black;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+#Ham_menu,
+#maps_link,
+#Bck_listings,
+#list_View,
+#search {
+    background: none;
+    border: none;
+}
+#List_Item {
+    /*background: green;*/
+    /*height: 40px;*/
+}
+#BookNow_btn {
+    background: #3a89c9;
+    color: white;
+    font-size: 33px;
+    width: 80%;
+    height: 73px;
+    border: none;
+}
+#wrapp {
+    margin: auto;
+    text-align: center;
+}
+i {
+    color: white;
+}
+.uib_col_2 {
+    width: 14%;
+}
+.uib_col_3 {
+    width: 86%;
+}
+
+
+/** {
+    font-family: 'trebuchet MS', sans-serif;
+}*/
+body,
+html {
+    height: 100%;
+    margin: auto;
+    background-color: #FFFFFF;
+    position: relative;
+}
+h1 {
+    color: #e4685d;
+    font-size: 50px;
+    margin: auto;
+}
+.eventDiv {
+    border-bottom: 1px solid gray;
+    margin-bottom: 2em;
+}
+#content {
+    background-color: #7187DD;
+    height: 100%;
+}
+#search {
+    background-color: grey;
+    border-radius: 6px;
+    display: inline-block;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 15px;
+    text-decoration: none;
+}
+/*#search:hover {
+		 		background:linear-gradient(to bottom, #e4685d 5%, #fc8d83 100%);
+		 		background-color:#e4685d;
+		 	}*/
+/*#search:active {
+		 		position:relative;
+		 		top:1px;
+                background-color:#F2F2F2;
+		 	}*/
+
+#searchterm {
+    font-size: 16px;
+    width: 72%;
+    border-radius: 0px;
+}
+img {
+    padding: 7px;
+    border: 1px solid black;
+    /*background-color:white;*/
+}
+#map_wrap {
+    /*position:absolute;*/
+    
+    position: relative;
+    width: 100%;
+    height: 76%;
+    /*background: green;*/
+}
+#map-div {
+    /*margin: 0;
+				padding: 0;*/
+    
+    width: 100%;
+    /*height: 300px;*/
+    
+    height: 100%;
+    border: 1px solid black;
+    /*opacity: 0;*/
+}
+.label {
+    /*box-shadow: 2px 2px 4px #333;*/
+    
+    color: white;
+    font-size: 20px;
+    font-style: bold;
+    /*opacity:1;*/
+    /*background: yellow;*/
+    
+    background-color: transparent;
+}
+.labels {
+    box-shadow: 2px 2px 4px #333;
+    border-radius: 20px;
+    opacity: 1;
+    height: 30px;
+    width: 30px;
+    background: #3a89c9;
+    border: 6px solid white;
+}
+body:not(#afui) .upage-outer {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+#arrow{
+    float: right;
+    position: relative;
+    bottom: 90px;
+    font-size: 20px;
+}
+.list-group-item-text{
+    width: 85%;
+    font-size: 20px;
+}
+.lablTitle{
+    font-size: 30px;
+}
+.smInfo{
+	font-size: 15px;
+}
+.priceLabel{
+	font-size: 30px;
+    color: #3a89c9;
+    position: relative;
+    top: 4px;
+}
+.lablTitle2{
+    font-size: 40px;
+    padding-bottom: 30px;
+    padding-top: 35px;
+}
+.smlInfo2{
+	font-size: 20px;
+}
+.priceLabel2{
+	font-size: 50px;
+	color: #3a89c9;
+	position: relative;
+	top: 9px;
+}
+.sptLft{
+    font-size: 20px;
+}
+.address2{
+    font-size:17px;
+}
+.detCont{
+    padding-bottom: 40px;
+}
+.navTxt{
+    padding-left: 37px;
+    font-size: 22px;
+    padding-top: 65px;
+
+}
+.navTxt p{
+    padding-bottom: 27px;
+}
+.sidebar-content{
+
+    background: #dcdcdc;
+}
+
+

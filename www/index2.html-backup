@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <link rel="stylesheet" type="text/css" href="app_framework/2.1/css/af.ui.min.css">
+    <link rel="stylesheet" type="text/css" href="app_framework/2.1/css/icons.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index_main.less.css" class="main-less">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+    <script src="intelxdk.js"></script>
+    <script src="cordova.js"></script>
+    <script src="xhr.js"></script>
+    <script src="xdk/init-dev.js"></script>
+    <!--      
+      You may substitute jQuery for the App Framework selector library.
+      See http://app-framework-software.intel.com/documentation.php#afui/afui_jquery
+    -->
+    <script type="application/javascript" src="app_framework/2.1/appframework.js"></script>
+    <script type="application/javascript" src="app_framework/2.1/appframework.ui.js" data-ver="1"></script>
+    <script type="application/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <!--      
+      You may substitute jQuery for the App Framework selector library.
+      See http://app-framework-software.intel.com/documentation.php#afui/afui_jquery
+    -->
+    <script type="application/javascript" src="lib/jquery.min.js"></script>
+    <script type="application/javascript" src="google_maps/google_maps.js"></script>
+    <script type="application/javascript" src="sidebar/js/hammer.js"></script>
+    <script type="application/javascript" src="sidebar/js/jquery.hammer.js"></script>
+    <script type="application/javascript" src="sidebar/js/swipe-hammer.js"></script>
+    <script type="application/javascript" src="sidebar/js/sidebar.js"></script>
+    <script type="application/javascript" src="js/app.js"></script>
+    <script type="application/javascript" src="js/init-app.js"></script>
+    <script type="application/javascript" src="js/index_user_scripts.js"></script>
+    <script type="application/javascript" src="xdk/ad/bs_subpage.js"></script>
+    <script type="application/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script type="application/javascript" src="lib/angular.min.js"></script>
+    <script type="application/javascript" src="xdk/ad/angular_support.js"></script>
+    <script type="application/javascript" src="xdk/services/service-credentials.js"></script>
+    <script type="application/javascript" src="xdk/services/service-methods.js"></script>
+    <script type="application/javascript" src="xdk/ad/ad_events_data.js"></script>
+    <script type="application/javascript" src="js/index_drive_services.js"></script>
+    <script type="application/javascript" src="js/index_init_services.js"></script>
+    <script type="application/javascript" src="xdk/ad/index_setup_services.js"></script>
+    <script type="application/javascript" src="xdk/ad/jquery.ba-throttle-debounce.min.js"></script>
+  </head>
+
+  <body id="afui" ng-app="myApp">
+
+    <div class="uwrap" id="content">
+      <div class="upage vertical-col left panel" id="mainpage" data-header="none" data-footer="none">
+        <div class="upage-outer">
+          <div id="uib_page_2" class="upage-content vertical-col">
+            <div class="grid grid-pad urow uib_row_3 row-height-3" data-uib="layout/row" data-ver="0">
+              <div class="col uib_col_8 col-0_4-12_4-4" data-uib="layout/col" data-ver="0">
+                <div class="widget-container content-area vertical-col left">
+
+                  <a class="button widget uib_w_14 btn-default d-margins" data-uib="app_framework/button" data-ver="1" id="Ham_menu">
+                  </a><span class="uib_shim"></span>
+                </div>
+              </div>
+              <div class="col uib_col_9 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+                <div class="widget-container content-area vertical-col">
+
+                  <div class="widget uib_w_13 d-margins" data-uib="media/text" data-ver="0">
+                    <div class="widget-container left-receptacle"></div>
+                    <div class="widget-container right-receptacle"></div>
+                    <div>
+                      <p>Best Spot</p>
+                    </div>
+                  </div><span class="uib_shim"></span>
+                </div>
+              </div>
+              <div class="col uib_col_7 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+                <div class="widget-container content-area vertical-col">
+
+                  <a class="button widget uib_w_2 btn-default d-margins" data-uib="app_framework/button" data-ver="1" id="list_View">
+                  </a><span class="uib_shim"></span>
+                </div>
+              </div>
+              <span class="uib_shim"></span>
+            </div>
+            <div class="widget uib_w_1 d-margins" data-uib="media/text" data-ver="0">
+              <div class="widget-container left-receptacle">
+
+              </div>
+              <div class="widget-container right-receptacle"></div>
+              <div>
+                <p>No data yet!</p>
+              </div>
+            </div>
+            <div class="table-thing with-label widget uib_w_7 d-margins" data-uib="app_framework/input" data-ver="1" data-sm="parkWhizsearch" data-sc="single" data-rpath="(base)" ng-controller="angular_controllers.uib_w_7.controller">
+              <input class="wide-control" id="searchterm" value="350 5th Avenue, New York, NY" type="text">
+            </div>
+            <div class="widget uib_w_16 maps-size d-margins" data-uib="media/google_maps" data-ver="0" data-sm="parkWhizsearch" data-zoom="8" data-center-latitude="{{entry.lat}}" data-center-longitude="{{entry.lng}}" data-sc="multiple" data-center-auto="true" data-long="{{lng}}"
+            data-lat="{{lng}}" data-rpath="[&quot;parking_listings&quot;]" data-array=".parking_listings[]" data-marker-title="{{location_name}}{{price_formatted}}"></div>
+          </div>
+          <div class="inner-element uib_w_15 uib_sidebar leftbar bar-bg thumb-bg bar-gutter" data-uib="layout/left_sidebar" data-ver="1" data-anim="{'style':'push', 'v':200, 'side':'left'}">
+            <div class="sidebar-content content-area vertical-col">
+
+            </div>
+          </div>
+        </div>
+        <div id="ListingPage" class="upage-content vertical-col hidden">
+          <div class="grid grid-pad urow uib_row_2 row-height-2" data-uib="layout/row" data-ver="0">
+            <div class="col uib_col_5 col-0_4-12_4-4" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col left">
+
+                <a class="button widget uib_w_12 btn-default d-margins icon location" data-uib="app_framework/button" data-ver="1"></a><span class="uib_shim"></span>
+              </div>
+            </div>
+            <div class="col uib_col_6 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col">
+
+                <div class="widget uib_w_3 d-margins" data-uib="media/text" data-ver="0">
+                  <div class="widget-container left-receptacle"></div>
+                  <div class="widget-container right-receptacle"></div>
+                  <div>
+                    <p>BEST SPOT</p>
+                  </div>
+                </div><span class="uib_shim"></span>
+              </div>
+            </div>
+            <div class="col uib_col_4 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col">
+
+                <a class="button widget uib_w_4 btn-default d-margins" data-uib="app_framework/button" data-ver="1" id="maps_link">
+                </a><span class="uib_shim"></span>
+              </div>
+            </div>
+            <span class="uib_shim"></span>
+          </div>
+
+          <ul class="list widget uib_w_17 d-margins" data-uib="app_framework/listview" data-ver="1" ng-controller="angular_controllers.uib_w_18.controller">
+            <li class="widget uib_w_18" data-uib="app_framework/listitem" data-ver="1" data-sm="parkWhizsearch" data-rpath=".parking_listings[]" data-sc="multiple" ng-repeat="entry in entries" ng-click="select_entry($event, entry)" data-adidx="{{$index}}" id="details"><a>{{entry.location_name}} {{entry.address}} {{entry.city}} {{entry.state}} {{entry.zip}} {{entry.distance}} {{entry.price_formatted}}</a>
+            </li>
+          </ul>
+        </div>
+        <div id="Details" class="upage-content vertical-col hidden">
+          <div class="grid grid-pad urow uib_row_1001 row-height-1001" data-uib="layout/row" data-ver="0">
+            <div class="col uib_col_1010 col-0_4-12_4-4" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col left">
+                <span class="uib_shim"></span>
+              </div>
+            </div>
+            <div class="col uib_col_2 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col">
+
+                <a class="button widget uib_w_9 btn-default d-margins" data-uib="app_framework/button" data-ver="1" id="Bck_listings">
+                </a><span class="uib_shim"></span>
+              </div>
+            </div>
+            <div class="col uib_col_3 col-0_4-12_4-8" data-uib="layout/col" data-ver="0">
+              <div class="widget-container content-area vertical-col">
+
+                <div class="widget uib_w_11 d-margins" data-uib="media/text" data-ver="0">
+                  <div class="widget-container left-receptacle"></div>
+                  <div class="widget-container right-receptacle"></div>
+                  <div>
+                    <p>{{entry.location_name}}</p>
+                  </div>
+                </div><span class="uib_shim"></span>
+              </div>
+            </div>
+            <span class="uib_shim"></span>
+          </div>
+          <a class="button widget uib_w_10 btn-default d-margins" data-uib="app_framework/button" data-ver="1">BOOK NOW</a>
+          <div class="widget uib_w_8 d-margins" data-uib="media/text" data-ver="0" data-sm="-- .uib_w_18" data-sc="single" data-rpath="(base)" ng-controller="angular_controllers.uib_w_8.controller">
+            <div class="widget-container left-receptacle"></div>
+            <div class="widget-container right-receptacle"></div>
+            <div>
+              <p>{{entry.location_name}}</p>
+              <p>{{entry.address}} {{entry.city}},{{entry.zip}} ,{entry.state}}</p>
+              <p>distance: {{entry.distance}} Likes: {{entry.recommendations}}</p>
+              <p>{{entry.price_formatted}} - {{entry.available_spots}} Spots Left</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

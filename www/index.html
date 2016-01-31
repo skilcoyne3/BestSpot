@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+	<!--
+  * Please see the included README.md file for license terms and conditions.
+  -->
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+		<meta charset="UTF-8">
+		<title>Blank App Designer Cordova Web App Project Template</title>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+		<!--
+  * The "meta viewport" tag (below) helps your app size appropriately to a device's ideal viewport.
+  * Note that Windows device viewports work better when initialized using the @viewport CSS rule.
+  * For a quick overview of "meta viewport" and @viewport, see this article:
+  *   http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/quick-tip-dont-forget-the-viewport-meta-tag
+  * To see how it works, try your app on a real device with and without a "meta viewport" tag.
+  * Additional useful references include:
+  *   http://www.quirksmode.org/mobile/viewports.html
+  *   http://www.quirksmode.org/mobile/metaviewport/devices.html
+  *   https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html
+-->
+
+		<!-- <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1"> -->
+		<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, minimum-scale=1, maximum-scale=2"> -->
+
+		<style>
+			/* following three (cascaded) are equivalent to above three meta viewport statements */
+			            /* see http://www.quirksmode.org/blog/archives/2014/05/html5_dev_conf.html */
+			            /* see http://dev.w3.org/csswg/css-device-adapt/ */
+			                @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }          @viewport { width: 100vw ; min-zoom: 100% zoom: 100% ; }
+			                @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }                   @viewport { user-zoom: fixed ; min-zoom: 100% ; }
+			                /*@-ms-viewport { user-zoom: zoom ; min-zoom: 100% ; max-zoom: 200% ; }   @viewport { user-zoom: zoom ; min-zoom: 100% ; max-zoom: 200% ; }*/
+		</style>
+
+		<link rel="stylesheet" href="css/app.css">
+		<link rel="stylesheet" type="text/css" href="css/index_main.less.css" class="main-less">
+
+		<!-- IMPORTANT: Do not include a weinre script tag as part of your release builds! -->
+		<!-- Place your remote debugging (weinre) script URL from the Test tab here, if it does not work below -->
+		<!-- <script src="http://debug-software.intel.com/target/target-script-min.js#insertabiglongfunkynumberfromthexdkstesttab"></script> -->
+
+		<!-- Recommended location for your JavaScript libraries -->
+		<!-- These library references (below) are just examples to give you the general idea... -->
+		<!-- <script src="lib/mc/hammer.js"></script> -->
+		<!-- <script src="lib/ft/fastclick.js"></script> -->
+
+		<!--
+  * cordova.js is a phantom lib for "Cordova HTML5 web app," it does nothing in a "Standard HTML5 web app"
+  * Seeing a "Failed to load resource: net::ERR_FILE_NOT_FOUND" message caused by this "cordova.js" script?
+  * The cordova.js script is required if you convert your "Standard HTML5" project into a "Cordova" project.
+  * You can safely ignore the error or comment out this line if you will not be developing a Cordova app.
+-->
+		<script src="cordova.js" id="xdkJScordova_"></script>
+
+		<script src="js/app.js"></script>
+		<!-- for your event code, see README and file comments for details -->
+		<script src="js/init-app.js"></script>
+		<!-- for your init code, see README and file comments for details -->
+		<script src="xdk/init-dev.js"></script>
+		<!-- normalizes device and document ready events, see file for details -->
+		<script type="application/javascript" src="lib/jquery.min.js"></script>
+		<script type="application/javascript" src="js/index_user_scripts.js"></script>
+		<script type="application/javascript" src="xdk/ad/bs_subpage.js"></script>
+		<!-- I ADDED!!!!!!!!!!!! -->
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true">
+		</script>
+		<script src="js/marker_with_label.js" type="text/javascript"></script>
+		<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script>
+			"use strict";
+			// IIFE Time!
+			
+			var infowindow;
+			var map;
+			var markers = [];
+			(function(){
+				var RETURN_KEY = 13;
+				var ParkWhiz_JSONP_URL = "http://api.parkwhiz.com/search/?callback=?&key=";
+				var ParkWhiz_API_KEY = "dd10ac012635200d9d685f62f39cff73";
+                
+				window.onload = init;
+				
+				function init(){
+					document.querySelector("#search").onclick = doSearchForEvent;
+					document.querySelector("#searchterm").onkeyup = doKeyup;
+					
+					var mapOptions = {
+						//center: { lat: 39.828127, lng: -98.579404},
+						center: { lat: 47.560266, lng: -109.580592},
+						zoom: 4,
+						disableDefaultUI: true
+					};
+					map = new google.maps.Map(document.getElementById('map-div'),
+		            mapOptions);
+				}
+				
+				function doKeyup(e){
+					if(e.keyCode == RETURN_KEY){
+						doSearchForEvent();
+					}
+				}
+				
+				function doSearchForEvent(){
+					//clear markers
+					clearMarkers();
+					
+					// build up our URL string
+					var url = ParkWhiz_JSONP_URL;
+					url +=  ParkWhiz_API_KEY;
+					url += "&destination=";
+					
+					// get value of form field
+					var value = document.querySelector("#searchterm").value;
+					
+					// get rid of any leading and trailing spaces
+					value = value.trim();
+					
+					// if there's no band to search then bail out of the function (return does this)
+					if(value.length < 1) return;
+					
+					//document.querySelector("#dynamicContent").innerHTML = "<b>Searching for " + value + "</b>";
+					
+					// replace spaces the user typed in the middle of the term with %20
+					// %20 is the hexadecimal value for a space
+					value = encodeURI(value); 
+					
+					// finally, add the artist name to the end of the string
+					url += value;
+					
+					// call the web service, and download the file
+					console.log("loading " + url);
+					//$("#dynamicContent").fadeOut(250);
+					
+                    //get back json
+                    var data = $.getJSON( url, function() {
+                        console.log( "success" );
+                        //eventJsonLoaded(data);
+                    })
+                    //first method search 
+                    .done(function(data) {
+                        console.log( "second success" );
+                        eventJsonLoaded(data);
+                    })
+                    //second method - if url redirect for some venue names
+                    .fail(function() {
+                        console.log( "error" );
+                        url = "http://api.parkwhiz.com/";
+
+                        //same as above
+                        value = document.querySelector("#searchterm").value;
+                        value = value.trim();
+                        if(value.length < 1) return;
+
+                        // replace spaces with dashes - needed for url
+                        value = value.replace(/\s+/g, '-').toLowerCase();
+
+                        // create rest of url for api call
+                        url += value;
+                        // need -parking after whatever searched(value)
+                        url += "-parking/?callback=?&key=";
+                        url += ParkWhiz_API_KEY;
+
+                        //load data with new url
+                        $.getJSON(url).done(function(data){				
+                        console.log("url2: " + url);
+                        eventJsonLoaded(data);		
+                        })
+                    })
+                    
+				}// end init
+                
+                
+        function addMarker(latitude, longitude, title, price_label){
+                var position = {lat: latitude, lng: longitude};
+                var image = {
+                    url:'icons/marker_icon.png',
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(20, 34),
+                    scaledSize: new google.maps.Size(55, 70)
+                    //scaledSize: new google.maps.Size(35, 50)
+                 }
+                var marker = new MarkerWithLabel({
+                    position: position,
+                    map: map,
+                    labelContent: price_label,
+                    labelAnchor: new google.maps.Point(24, 25),
+                    labelClass: "label", // the CSS class for the label
+                    title: title,
+                    icon: image
+                });
+
+
+
+                //add a listener for the click event 
+                google.maps.event.addListener(marker, 'click', function(e){
+                    makeInfoWindow(this.position,this.title);
+                });
+
+                //zoom on first result
+                //zoomOnFirstResult();
+
+            }// addMarker
+                
+            function addMarker2(latitude, longitude){
+                var position = {lat: latitude, lng: longitude};
+
+                new MarkerWithLabel
+
+                var marker = new MarkerWithLabel(
+                    {
+                        position: position,
+                        map: map,
+                         icon: { path: google.maps.SymbolPath.CIRCLE},
+                        labelClass: "labels",
+                    }
+                    );
+
+                markers.push(marker);
+
+                //zoom on first result
+                zoomOnFirstResult();
+
+	        } //addMarker2
+                
+                
+            function makeInfoWindow(position,msg){
+                //Close old InfoWindow if it exists
+                if(infowindow) infowindow.close();
+
+                //make a new InfoWindow
+                infowindow = new google.maps.InfoWindow({
+                    map: map,
+                    position: position,
+                    content: "<b>" + msg + "</b>",
+                    maxWidth: 350
+                    });
+            }
+			
+			function clearMarkers(){
+				console.log("markers cleared");
+				//close info window if it exists
+				if(infowindow) infowindow.close();
+				//loop through markers array
+				for (var i = 0; i < markers.length; i++){
+						//call .setMap(null) on each marker to remove it from map
+						markers[i].setMap(null);
+					}
+					//empty or re-initialize markers array
+					markers = [];
+			
+			}
+			function zoomOnFirstResult(){
+				if (markers.length == 0) return;
+					//set the center of the map to the position of the first marker
+					var latLng = markers[0].getPosition(); 
+					map.setCenter(latLng);
+					// set the zoom level of the map to 4
+					map.setZoom(15);	
+			}
+				
+				function eventJsonLoaded(obj){
+					console.log("obj = " +obj);
+					//console.log("obj stringified = " + JSON.stringify(obj));
+					
+					if(obj.error){ // this catches a bad API key, missing parameter, etc...
+						var message = obj.message;
+						//document.querySelector("#dynamicContent").innerHTML = "<b>Error: " + message + "</b>";
+						//$("#dynamicContent").fadeIn(1000);
+						return; // bail out
+					}
+					
+				    if (obj && obj.locations == 0){ // if no events are found
+						//document.querySelector("#dynamicContent").innerHTML = "<p>No events found</p>";
+						//$("#dynamicContent").fadeIn(1000);
+						return; // bail out
+					}
+					
+					// otherwise, start parsing!
+					var total = obj.locations;
+                    var search_lat = Number(obj.lat);
+			        var search_lng = Number(obj.lng);
+                    //console.log("search lat: " + search_lat);
+                    //console.log("search lng: " + search_lng);
+                    
+                    //add result marker
+                    if(search_lat && search_lng){
+                        addMarker2(search_lat, search_lng);
+                        }
+                    
+					
+					var allEvents = obj.parking_listings;
+					console.log("allEvents.length = " + allEvents.length);
+					var bigString = "<p>" + total + " events found!</p><hr>";
+		
+					if (!(allEvents instanceof Array)){
+						allEvents = [allEvents]; // put the object in an array
+					}
+						
+					for (var i=0;i<allEvents.length;i++){
+						var place = allEvents[i];
+                        var name = place.location_name;
+                        var address = place.address;
+                        var city = place.city;
+                        var state = place.state;
+                        var zip = place.zip
+                        //var lat = place.lat;
+                        //var lng = place lng;
+                        var distance = place.distance / 5280;
+                        var rec = place.recommendations;
+                        var marker_price = "$" + place.price.toFixed(0);
+                        var exact_price = place.price_formatted;
+                        var openSpots = place.available_spots;
+                        var book = place.www_reserve_url;
+
+                        var latitude = Number(place.lat);
+                        var longitude = Number(place.lng);
+						
+						/*
+						if (artistList instanceof Array){ 
+							var artistText = artistList.join(", "); 
+						}
+						else{
+							artistText = artistList;
+						}
+						*/
+		
+						// do a bunch of concatenation
+						var line = "<div class='eventDiv'>";
+						
+                        line += "<h2>" + name + "</h2>";
+                        line += "<p>" + address + " " + city + ", " + state + " " + zip;
+                        line += "<p><b>" + "distance: " + "</b>" + distance.toFixed(2) + " Miles Away  Likes: " + rec + "</p>";
+                        line += "<p><b>" + exact_price + "</b> - " + openSpots + " Spots available</p>";
+                        line += "<a href= "+ book +" target = _blank> BOOK NOW </a>";
+
+                        line += "</div>";
+                        bigString += line;
+                        
+                        //adding result markers
+				        if(latitude && longitude){
+                            //addMarker(latitude, longitude);
+                            addMarker(latitude, longitude, line, marker_price);
+                            //console.log("Line: " + line);
+                        }
+					}// eventJsonLoaded
+					
+					// update our UI
+					//document.querySelector("#dynamicContent").innerHTML = bigString;
+					//$("#dynamicContent").fadeIn(1000);
+				}	
+		  	}())
+		</script>
+
+		<script type="application/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+		<script type="application/javascript" src="lib/angular.min.js"></script>
+		<script type="application/javascript" src="xdk/ad/angular_support.js"></script>
+		<script type="application/javascript" src="xdk/ad/jquery.ba-throttle-debounce.min.js"></script>
+		<script type="application/javascript" src="xhr.js"></script>
+		<script type="application/javascript" src="xdk/services/service-credentials.js"></script>
+		<script type="application/javascript" src="xdk/services/service-methods.js"></script>
+
+		<script type="application/javascript" src="xdk/ad/ad_events_data.js"></script>
+		<script type="application/javascript" src="js/index_drive_services.js"></script>
+		<script type="application/javascript" src="js/index_init_services.js"></script>
+		<script type="application/javascript" src="xdk/ad/index_setup_services.js"></script>
+		<script type="application/javascript" src="sidebar/js/hammer.js"></script>
+		<script type="application/javascript" src="sidebar/js/jquery.hammer.js"></script>
+		<script type="application/javascript" src="sidebar/js/swipe-hammer.js"></script>
+		<script type="application/javascript" src="sidebar/js/sidebar.js"></script>
+		<script type="application/javascript" src="google_maps/google_maps.js"></script>
+		<script type="application/javascript" src="marginal/marginal-position.min.js"></script>
+	</head>
+
+	<body ng-app="myApp">
+
+		<!-- IMPORTANT: Do not include a weinre script tag as part of your release builds! -->
+		<!-- Place your remote debugging (weinre) script URL from the Test tab here, if it does not work above -->
+		<!-- <script src="http://debug-software.intel.com/target/target-script-min.js#insertabiglongfunkynumberfromthexdkstesttab"></script> -->
+		<div class="upage" id="mainpage">
+
+			<div id="wrap_map_page">
+				<div class="upage-outer">
+					<div class="upage-content ac0 content-area vertical-col" id="uib_page_2" data-oh="{}" data-ohb="{}">
+						<div class="grid grid-pad urow uib_row_3 Nav_bar navbar_color row-height-1001" data-uib="layout/row" data-ver="0">
+
+							<div class="col uib_col_8 col-0_2-12_2-2" data-uib="layout/col" data-ver="0">
+								<div class="widget-container content-area vertical-col">
+
+									<button class="btn widget uib_w_14 d-margins btn-default button_style" data-uib="twitter%20bootstrap/button" data-ver="1" id="Ham_menu"><i class="glyphicon glyphicon-align-justify" data-position="icon only"></i>
+									</button><span class="uib_shim"></span>
+								</div>
+							</div>
+
+							<div class="col uib_col_9 col-0_8-12_8-10" data-uib="layout/col" data-ver="0">
+								<div class="widget-container content-area vertical-col">
+
+									<div class="widget uib_w_13 d-margins logo" data-uib="media/text" data-ver="0">
+										<div class="widget-container left-receptacle"></div>
+										<div class="widget-container right-receptacle"></div>
+										<div>
+											<p>BEST SPOT</p>
+										</div>
+									</div><span class="uib_shim"></span>
+								</div>
+							</div>
+
+							<div class="col uib_col_7 col-0_2-12_2-10" data-uib="layout/col" data-ver="0">
+								<div class="widget-container content-area vertical-col">
+									<button class="btn widget uib_w_2 d-margins btn-default button_style" data-uib="twitter%20bootstrap/button" data-ver="1" id="list_View"><i class="glyphicon glyphicon-th-list" data-position="icon only"></i>
+									</button><span class="uib_shim"></span>
+								</div>
+							</div>
+							<span class="uib_shim"></span>
+						</div>
+
+						<div style="padding:25px 8px 25px;">
+							<input id="searchterm" type="text" size="20" maxlength="40" placeholder="search" value="350 5th Avenue, New York, NY" autofocus="">
+							<button type="button" id="search">Search</button>
+
+						</div>
+
+						<div id="map_wrap">
+							<div id="map-div"></div>
+						</div>
+						<!--<h2>Search Results</h2>-->
+						<!--<div id="dynamicContent">
+								<p>No data yet!</p>
+						</div>-->
+
+						<div class="inner-element uib_w_15 uib_sidebar leftbar bar-bg thumb-bg bar-gutter" data-uib="layout/left_sidebar" data-ver="1" data-anim="{'style':'push', 'v':200, 'side':'left'}">
+							<div class="sidebar-content content-area vertical-col">
+
+								<div class="grid grid-pad urow uib_row_8 row-height-8" data-uib="layout/row" data-ver="0">
+									<div class="col uib_col_17 col-0_12-12" data-uib="layout/col" data-ver="0">
+										<div class="widget-container content-area vertical-col">
+
+											<div class="widget uib_w_30 d-margins" data-uib="media/text" data-ver="0">
+												<div class="widget-container left-receptacle"></div>
+												<div class="widget-container right-receptacle"></div>
+												<div class="navTxt">
+													<p>Search</p>
+													<p>Reservations</p>
+													<p>Wallet</p>
+													<p>Coupons</p>
+													<p>Settings</p>
+													<p>Dave</p>
+												</div>
+											</div><span class="uib_shim"></span>
+										</div>
+									</div>
+									<span class="uib_shim"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="ListingPage" class="upage-content vertical-col hidden">
+				<div class="grid grid-pad urow uib_row_2 Nav_bar navbar_color row-height-1001" data-uib="layout/row" data-ver="0">
+					<div class="col uib_col_5 col-0_2-12_2-2" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+
+							<button class="btn widget uib_w_12 d-margins btn-default button_style" data-uib="twitter%20bootstrap/button" data-ver="1" id="Ham_menu"><i class="glyphicon glyphicon-align-justify" data-position="icon only"></i>
+							</button><span class="uib_shim"></span>
+						</div>
+					</div>
+					<div class="col uib_col_6 col-0_8-12_8-10" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+							<div class="widget uib_w_3 d-margins logo" data-uib="media/text" data-ver="0">
+								<div class="widget-container left-receptacle"></div>
+								<div class="widget-container right-receptacle"></div>
+								<div>
+									<p>BEST SPOT</p>
+								</div>
+							</div><span class="uib_shim"></span>
+						</div>
+					</div>
+					<div class="col uib_col_4 col-0_2-12_2-10" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+							<button class="btn widget uib_w_4 d-margins btn-default button_style" data-uib="twitter%20bootstrap/button" data-ver="1" id="maps_link"><i class="glyphicon glyphicon-map-marker" data-position="icon only"></i>
+							</button><span class="uib_shim"></span>
+						</div>
+					</div>
+					<span class="uib_shim"></span>
+				</div>
+
+				<!--<div class="table-thing with-label widget uib_w_5 d-margins search_box" data-uib="app_framework/input" data-ver="1" data-driving="[{'service':'movie_search','identifier':'value','uib':'app_framework/input','field':'q','request_on_change':true}]">-->
+
+				<div class="table-thing widget uib_w_7 d-margins search_box" data-uib="twitter%20bootstrap/input" data-ver="1" data-driving="[{'service':'parkWhizsearch','identifier':'value','uib':'twitter%20bootstrap/input','field':'destination','request_on_change':true}]">
+					<label class="narrow-control"></label>
+					<input class="wide-control form-control default" type="text" placeholder="search" value="">
+				</div>
+
+				<div class="list-group widget uib_w_17 d-margins" data-uib="twitter%20bootstrap/list_group" data-ver="1" ng-controller="angular_controllers.uib_w_19.controller">
+					<a class="list-group-item allow-badge widget uib_w_19" data-uib="twitter%20bootstrap/list_item" data-ver="1" data-sm="parkWhizsearch" data-rpath=".parking_listings[]" data-sc="multiple" ng-repeat="entry in entries" ng-click="select_entry($event, entry)"
+					data-adidx="{{$index}}" id="List_Item">
+
+						<div class="list-group-item-text">
+							<p class="lablTitle">{{entry.location_name}}</p>
+							<p class="smlInfo">{{entry.distance}} Feet away</p>
+							<p class="smlInfo">{{entry.recommendations}} Likes</p>
+							<p class=""><span class="priceLabel">{{entry.price_formatted}}</span> - {{entry.available_spots}} Spots Left</p>
+						</div>
+						<span id="arrow">&gt;</span>
+
+					</a>
+				</div>
+                <div class="inner-element uib_w_15 uib_sidebar leftbar bar-bg thumb-bg bar-gutter" data-uib="layout/left_sidebar" data-ver="1" data-anim="{'style':'push', 'v':200, 'side':'left'}">
+							<div class="sidebar-content content-area vertical-col">
+
+								<div class="grid grid-pad urow uib_row_8 row-height-8" data-uib="layout/row" data-ver="0">
+									<div class="col uib_col_17 col-0_12-12" data-uib="layout/col" data-ver="0">
+										<div class="widget-container content-area vertical-col">
+
+											<div class="widget uib_w_30 d-margins" data-uib="media/text" data-ver="0">
+												<div class="widget-container left-receptacle"></div>
+												<div class="widget-container right-receptacle"></div>
+												<div class="navTxt">
+													<p>Search</p>
+													<p>Reservations</p>
+													<p>Wallet</p>
+													<p>Coupons</p>
+													<p>Settings</p>
+													<p>Dave</p>
+												</div>
+											</div><span class="uib_shim"></span>
+										</div>
+									</div>
+									<span class="uib_shim"></span>
+								</div>
+							</div>
+						</div>
+			</div>
+
+			<div id="Details" class="upage-content vertical-col hidden">
+				<div class="grid grid-pad urow uib_row_1 Nav_bar navbar_color" data-uib="layout/row" data-ver="0">
+					<div class="col uib_col_2 col-0_1-12" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+							<button class="btn widget uib_w_9 d-margins btn-default button_style" data-uib="twitter%20bootstrap/button" data-ver="1" id="Bck_listings"><i class="glyphicon glyphicon-chevron-left" data-position="icon only"></i>
+							</button><span class="uib_shim"></span>
+						</div>
+					</div>
+
+					<div class="col uib_col_3 col-0_11-12" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+
+							<div class="widget uib_w_20 d-margins txtLabel_nav" data-uib="media/text" data-ver="0" data-sm="-- .uib_w_19" data-sc="single" data-rpath="(base)" ng-controller="angular_controllers.uib_w_20.controller">
+								<div class="widget-container left-receptacle"></div>
+								<div class="widget-container right-receptacle"></div>
+								<div>
+									<p>{{entry.location_name}}</p>
+								</div>
+							</div><span class="uib_shim"></span>
+						</div>
+					</div>
+					<span class="uib_shim"></span>
+				</div>
+
+				<div class="widget uib_w_21 d-margins" data-uib="media/text" data-ver="0" data-sm="-- .uib_w_19" data-sc="single" data-rpath="(base)" ng-controller="angular_controllers.uib_w_21.controller">
+					<div class="widget-container left-receptacle"></div>
+					<div class="widget-container right-receptacle"></div>
+
+					<div id="wrapp">
+						<div class="detCont">
+							<p class="lablTitle2">{{entry.location_name}}</p>
+							<p class="address2">{{entry.address}} {{entry.city}},{{entry.zip}},{{entry.state}}</p>
+							<p class="smlInfo2">{{entry.distance}} Feet away</p>
+							<p class="smlInfo2">{{entry.recommendations}} Likes</p>
+							<p class="sptLft"><span class="priceLabel2">{{entry.price_formatted}}</span> - {{entry.available_spots}} Spots Left</p>
+						</div>
+
+						<button class="btn widget uib_w_27 d-margins btn-default" data-uib="twitter%20bootstrap/button" data-ver="1" id="BookNow_btn">Book Now</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="upage hidden" id="Booking">
+
+				<div class="upage-outer">
+					<div class="uib-header header-bg container-group inner-element uib_w_26" data-uib="layout/header" data-ver="0">
+						<h2></h2>
+						<div class="widget-container wrapping-col single-centered"></div>
+						<div class="widget-container content-area horiz-area wrapping-col left"></div>
+						<div class="widget-container content-area horiz-area wrapping-col right"></div>
+					</div>
+					<div class="upage-content ac0 content-area vertical-col left" id="page_85_56"></div>
+				</div>
+			</div>
+			<div class="modal outer-element uib_w_28" data-uib="twitter%20bootstrap/modal" data-ver="1" data-backdrop="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button class="close" data-dismiss="modal">x</button>
+							<h4 class="modal-title">Warning</h4>
+						</div>
+
+						<div class="modal-body">
+							<div class="col uib_col_12 single-col" data-uib="layout/col" data-ver="0" data-sm="-- .uib_w_19" data-sc="single" data-rpath="(base)" ng-controller="angular_controllers.uib_col_12.controller">
+
+								<div class="widget-container content-area vertical-col">
+
+									<div class="widget uib_w_29 d-margins" data-uib="media/text" data-ver="0">
+										<div class="widget-container left-receptacle"></div>
+										<div class="widget-container right-receptacle"></div>
+										<div>
+											<p>WARNING!: you are about to leave this app</p>
+											<a href="{{entry.www_reserve_url}}">close app and book</a>
+										</div>
+									</div><span class="uib_shim"></span>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+							<button data-dismiss="modal" class="btn btn-default" type="button">close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>
